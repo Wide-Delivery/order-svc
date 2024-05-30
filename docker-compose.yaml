@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  order-svc:
+    image: 'stanislavmatsak/wd-order-svc:latest'
+    container_name: 'order-svc'
+    ports:
+      - '3006:3006'
+
+volumes:
+  wd-order-svc-logs:
