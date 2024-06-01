@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.widedelivery.order.proto";
+
+package com.widedelivery.order.proto;
+
+import "com.widedelivery.driver/driver.proto";
+
+
+message AddDriverToMatchingInput {
+  com.widedelivery.driver.proto.DriverWithTrips driver_with_trips = 1;
+}
