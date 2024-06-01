@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.widedelivery.driver.proto";
+package com.widedelivery.driver.proto;
+
+import "google/protobuf/timestamp.proto";
+import "com.widedelivery.order/order.proto";
+
+message DriverTrip {
+  string driver_id = 1;
+  string departure_longitude = 2;
+  string departure_latitude = 3;
+  google.protobuf.Timestamp departure_time = 4;
+  string destination_longitude = 5;
+  string destination_latitude = 6;
+  google.protobuf.Timestamp destination_time = 7;
+  double free_space_length = 8;
+  double free_space_width = 9;
+  double free_space_height = 10;
+
+  DriverTripStatus status = 11;
+  repeated order.proto.Order accepted_orders = 12;
+
+  google.protobuf.Timestamp createdAt = 16;
+  google.protobuf.Timestamp updatedAt = 17;
+}
+
+message DriverTrips {
+  repeated DriverTrip trips = 1;
+}
+
+message CreateDriverTripInput {
+  string driver_id = 1;
+  string departure_longitude = 2;
+  string departure_latitude = 3;
+  google.protobuf.Timestamp departure_time = 4;
+  string destination_longitude = 5;
+  string destination_latitude = 6;
+  google.protobuf.Timestamp destination_time = 7;
+  double free_space_length = 8;
+  double free_space_width = 9;
+  double free_space_height = 10;
+}
+
+message UpdateDriverTripInput {
+  string driver_trip_id = 1;
+  string departure_longitude = 2;
+  string departure_latitude = 3;
+  google.protobuf.Timestamp departure_time = 4;
+  string destination_longitude = 5;
+  string destination_latitude = 6;
+  google.protobuf.Timestamp destination_time = 7;
+  double free_space_length = 8;
+  double free_space_width = 9;
+  double free_space_height = 10;
+}
+
+enum DriverTripStatus {
+  EXPECTED = 0;
+  FINISHED = 1;
+  CANCELLED = 2;
+}

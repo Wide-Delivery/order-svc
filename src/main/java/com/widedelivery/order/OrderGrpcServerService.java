@@ -1,56 +1,65 @@
 package com.widedelivery.order;
 
-import com.widedelivery.order.models.OrderModel;
-import com.widedelivery.order.models.PreCreatedOrderModel;
+import com.widedelivery.order.entity.OrderModel;
+import com.widedelivery.order.entity.PreCreatedOrderModel;
+import com.widedelivery.order.mapper.OrderMapper;
+import com.widedelivery.order.mapper.PreCreatedOrderModelMapper;
 import com.widedelivery.order.proto.CreateOrderInput;
 import com.widedelivery.order.proto.CreateOrderResponse;
-import com.widedelivery.order.proto.GetOrderInput;
 import com.widedelivery.order.proto.OrderResponse;
-import com.widedelivery.order.proto.OrderServiceGrpc.OrderServiceImplBase;
-import com.widedelivery.order.services.OrderService;
+import com.widedelivery.order.service.GetOrderInput;
+import com.widedelivery.order.service.OrderService;
+import com.widedelivery.order.service.OrderServiceGrpc;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.logging.Logger;
 
 @GrpcService
-public class OrderGrpcServerService extends OrderServiceImplBase {
-    private static final Logger logger = Logger.getLogger(OrderGrpcServerService.class.getName());
+public class OrderGrpcServerService extends OrderServiceGrpc.OrderServiceImplBase {
 
-    @Autowired
-    OrderService orderService;
+    private static final Logger logger = LogManager.getLogger(OrderGrpcServerService.class);
+
+    private final OrderService orderService;
+
+    public OrderGrpcServerService(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @Override
     public void createOrder(CreateOrderInput request, StreamObserver<CreateOrderResponse> responseObserver) {
-        PreCreatedOrderModel preCreatedOrderModel = PreCreatedOrderModel.getFromGrpcRequest(request);
+        try {
+            PreCreatedOrderModel preCreatedOrderModel = PreCreatedOrderModelMapper.toModel(request);
 
-        OrderModel newOrderModel = orderService.createOrder(preCreatedOrderModel);
-        logger.info("Creating order" + newOrderModel);
-        responseObserver.onNext(
-                CreateOrderResponse
-                        .newBuilder()
-                        .setOrder(newOrderModel.getGrpcMessage())
-                        .build());
-        responseObserver.onCompleted();
+            OrderModel newOrderModel = orderService.createOrder(preCreatedOrderModel);
+
+            logger.info("Order created successfully: {}", newOrderModel);
+
+            CreateOrderResponse response = CreateOrderResponse.newBuilder()
+                    .setOrder(OrderMapper.toGrpcModel(newOrderModel))
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            logger.error("Failed to create order: {}", e.getMessage(), e);
+            responseObserver.onError(Status.INTERNAL.withDescription("Order creation failed").asRuntimeException());
+        }
     }
 
     @Override
     public void getOrder(GetOrderInput request, StreamObserver<OrderResponse> responseObserver) {
-        OrderModel order = orderService.getOrder(request.getOrderId());
+        String id = request.getOrderId();
+
+        OrderModel order = orderService.getOrder(id);
+
         responseObserver.onNext(OrderResponse
                 .newBuilder()
-                .setOrder(
-                        order.getGrpcMessage())
+                .setOrder(OrderMapper.toGrpcModel(order))
                 .build());
+
         responseObserver.onCompleted();
-    }
-
-    private CreateOrderResponse createOrderService(CreateOrderInput request) {
-        return CreateOrderResponse.newBuilder().setOrder(com.widedelivery.order.proto.Order.newBuilder()).build();
-    }
-
-    private OrderResponse getOrderService(GetOrderInput request) {
-        return OrderResponse.newBuilder().setOrder(com.widedelivery.order.proto.Order.newBuilder()).build();
     }
 }

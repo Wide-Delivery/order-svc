@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.widedelivery.order.service";
+option java_outer_classname = "OrderProto";
+
+package com.widedelivery.order.service;
+
+import "com.widedelivery.order/rpc_create_order.proto";
+import "com.widedelivery.order/rpc_get_matched_orders.proto";
+import "com.widedelivery.order/rpc_add_driver_to_matching.proto";
+import "com.widedelivery.order/rpc_remove_driver_from_matching.proto";
+import "com.widedelivery.order/order.proto";
+
+service OrderService {
+  rpc CreateOrder(com.widedelivery.order.proto.CreateOrderInput) returns (com.widedelivery.order.proto.CreateOrderResponse) {}
+  rpc GetOrder(GetOrderInput) returns (com.widedelivery.order.proto.OrderResponse) {}
+
+  rpc AddDriverForMatching(com.widedelivery.order.proto.AddDriverToMatchingInput) returns (com.widedelivery.order.proto.GenericResponse) {}
+  rpc RemoveDriverFromMatching(com.widedelivery.order.proto.RemoveDriverFromMatchingInput) returns (com.widedelivery.order.proto.GenericResponse) {}
+  rpc GetMatchedOrders(com.widedelivery.order.proto.GetMatchedOrdersInput) returns (stream com.widedelivery.order.proto.GetMatchedOrdersOutput) {}
+}
+
+message GetOrderInput {
+  string order_id = 1;
+}
