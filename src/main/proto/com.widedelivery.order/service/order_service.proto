@@ -16,6 +16,8 @@ service OrderService {
   rpc CreateOrder(com.widedelivery.order.proto.CreateOrderInput) returns (com.widedelivery.order.proto.CreateOrderResponse) {}
   rpc GetOrder(GetOrderInput) returns (com.widedelivery.order.proto.OrderResponse) {}
   rpc GetOrders(GetOrdersRequest) returns (GetOrdersResponse) {}
+  rpc SearchOrders(SearchOrdersRequest) returns (SearchOrdersResponse) {}
+
 
 
   rpc AddDriverForMatching(com.widedelivery.order.proto.AddDriverToMatchingInput) returns (com.widedelivery.order.proto.GenericResponse) {}
@@ -33,6 +35,18 @@ message GetOrdersRequest {
 }
 
 message GetOrdersResponse {
+  repeated proto.Order orders = 1;
+  int32 total_pages = 2;
+  int32 current_page = 3;
+}
+
+message SearchOrdersRequest {
+  map<string, string> search_params = 1;
+  int32 page_number = 2;
+  int32 page_size = 3;
+}
+
+message SearchOrdersResponse {
   repeated proto.Order orders = 1;
   int32 total_pages = 2;
   int32 current_page = 3;

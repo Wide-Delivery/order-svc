@@ -1,6 +1,7 @@
 package com.widedelivery.order;
 
 import com.widedelivery.order.entity.OrderModel;
+import com.widedelivery.order.entity.OrderStatus;
 import com.widedelivery.order.entity.PreCreatedOrderModel;
 import com.widedelivery.order.mapper.OrderMapper;
 import com.widedelivery.order.mapper.PreCreatedOrderModelMapper;
@@ -14,9 +15,14 @@ import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @GrpcService
 public class GrpcOrderService extends OrderServiceGrpc.OrderServiceImplBase {
@@ -76,6 +82,63 @@ public class GrpcOrderService extends OrderServiceGrpc.OrderServiceImplBase {
                 .toList();
 
         GetOrdersResponse response = GetOrdersResponse.newBuilder()
+                .addAllOrders(grpcOrders)
+                .setTotalPages(orders.getTotalPages())
+                .setCurrentPage(pageNumber)
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void searchOrders(SearchOrdersRequest request, StreamObserver<SearchOrdersResponse> responseObserver) {
+        int pageNumber = request.getPageNumber();
+        int pageSize = request.getPageSize();
+        Map<String, String> searchParams = request.getSearchParamsMap();
+        Map<String, Object> convertedSearchParams = new HashMap<>();
+
+        searchParams.forEach((key, value) -> {
+            switch (key) {
+                case "id":
+                case "userId":
+                case "driverId":
+                    convertedSearchParams.put(key, new ObjectId(value));
+                    break;
+                case "status":
+                    convertedSearchParams.put(key, OrderStatus.valueOf(value));
+                    break;
+                case "needLoader":
+                    convertedSearchParams.put(key, Boolean.parseBoolean(value));
+                    break;
+                case "cargoLength":
+                case "cargoWidth":
+                case "cargoHeight":
+                case "cargoWeight":
+                    convertedSearchParams.put(key, Double.parseDouble(value));
+                    break;
+                case "createdAt":
+                case "updatedAt":
+                case "departureTime":
+                case "destinationTime":
+                    convertedSearchParams.put(key, Instant.parse(value));
+                    break;
+                default:
+                    convertedSearchParams.put(key, value);
+            }
+        });
+
+        Page<OrderModel> orders = orderService.searchOrders(
+                convertedSearchParams,
+                PageRequest.of(pageNumber - 1, pageSize)
+        );
+
+        List<Order> grpcOrders = orders
+                .stream()
+                .map(OrderMapper::toGrpcModel)
+                .toList();
+
+        SearchOrdersResponse response = SearchOrdersResponse.newBuilder()
                 .addAllOrders(grpcOrders)
                 .setTotalPages(orders.getTotalPages())
                 .setCurrentPage(pageNumber)
