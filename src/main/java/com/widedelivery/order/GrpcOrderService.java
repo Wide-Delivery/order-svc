@@ -16,15 +16,14 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 @GrpcService
-public class OrderGrpcServerService extends OrderServiceGrpc.OrderServiceImplBase {
+public class GrpcOrderService extends OrderServiceGrpc.OrderServiceImplBase {
 
-    private static final Logger logger = LogManager.getLogger(OrderGrpcServerService.class);
+    private static final Logger logger = LogManager.getLogger(GrpcOrderService.class);
 
     private final OrderService orderService;
 
-    public OrderGrpcServerService(OrderService orderService) {
+    public GrpcOrderService(OrderService orderService) {
         this.orderService = orderService;
     }
 
