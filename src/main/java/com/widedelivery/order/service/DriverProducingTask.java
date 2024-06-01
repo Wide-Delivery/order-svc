@@ -1,9 +1,9 @@
-package com.widedelivery.order.services;
+package com.widedelivery.order.service;
 
 import com.google.protobuf.Timestamp;
-import com.widedelivery.order.models.DriverDto;
-import com.widedelivery.order.models.DriverTripDto;
-import com.widedelivery.order.models.DriverTripStatus;
+import com.widedelivery.order.entity.DriverDto;
+import com.widedelivery.order.entity.DriverTripDto;
+import com.widedelivery.order.entity.DriverTripStatus;
 import com.widedelivery.utils.GeoLocationUtils;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,6 @@ import static java.lang.System.out;
 import static java.lang.Thread.currentThread;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-@Component
 public class DriverProducingTask implements Runnable {
     private static final String MESSAGE_OF_DRIVER_IS_PRODUCED = "[PRODUCED DRIVER] %s.\n";
     private static final int SECONDS_DURATION_TO_SLEEP_BEFORE_PRODUCING = 5;

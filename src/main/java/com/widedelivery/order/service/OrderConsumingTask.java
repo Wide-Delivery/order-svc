@@ -1,6 +1,6 @@
-package com.widedelivery.order.services;
+package com.widedelivery.order.service;
 
-import com.widedelivery.order.models.OrderMatchingModel;
+import com.widedelivery.order.entity.OrderMatchingModel;
 
 import java.util.List;
 
@@ -29,6 +29,5 @@ public final class OrderConsumingTask implements Runnable {
         } catch (final InterruptedException interruptedException) {
             currentThread().interrupt();
         }
-
     }
 }

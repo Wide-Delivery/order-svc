@@ -1,8 +1,8 @@
-package com.widedelivery.order.services;
+package com.widedelivery.order.service;
 
-import com.widedelivery.order.models.DriverDto;
-import com.widedelivery.order.models.DriverTripDto;
-import com.widedelivery.order.models.OrderMatchingModel;
+import com.widedelivery.order.entity.DriverDto;
+import com.widedelivery.order.entity.DriverTripDto;
+import com.widedelivery.order.entity.OrderMatchingModel;
 import com.widedelivery.utils.GeoLocationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

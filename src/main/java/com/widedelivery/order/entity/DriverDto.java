@@ -1,4 +1,4 @@
-package com.widedelivery.order.models;
+package com.widedelivery.order.entity;
 
 import com.widedelivery.driver.proto.DriverOuterClass;
 import com.widedelivery.driver.proto.TruckOuterClass;
@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bson.types.ObjectId;
 
 import java.util.List;
 import java.util.stream.Collectors;

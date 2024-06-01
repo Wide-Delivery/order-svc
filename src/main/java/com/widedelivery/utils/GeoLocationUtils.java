@@ -1,10 +1,10 @@
 package com.widedelivery.utils;
 
-import com.widedelivery.order.models.DriverTripDto;
-import com.widedelivery.order.models.GeoLocationPoint;
+import com.widedelivery.order.entity.DriverTripDto;
+import com.widedelivery.order.entity.GeoLocationPoint;
 import com.google.maps.model.TravelMode;
-import com.widedelivery.order.models.OrderMatchingModel;
-import com.widedelivery.order.services.RouteService;
+import com.widedelivery.order.entity.OrderMatchingModel;
+import com.widedelivery.order.service.RouteService;
 
 import java.util.Random;
 

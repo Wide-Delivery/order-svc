@@ -1,4 +1,4 @@
-package com.widedelivery.order.models;
+package com.widedelivery.order.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.widedelivery.order.models;
+package com.widedelivery.order.entity;
 
 import com.google.protobuf.Timestamp;
 import com.widedelivery.order.proto.Order;

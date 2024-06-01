@@ -1,4 +1,4 @@
-package com.widedelivery.order.models;
+package com.widedelivery.order.entity;
 
 public enum DriverTripStatus {
     EXPECTED,

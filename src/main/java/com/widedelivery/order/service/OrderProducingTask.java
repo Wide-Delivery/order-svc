@@ -1,8 +1,8 @@
-package com.widedelivery.order.services;
+package com.widedelivery.order.service;
 
 import com.google.protobuf.Timestamp;
-import com.widedelivery.order.models.OrderMatchingModel;
-import com.widedelivery.order.models.OrderStatus;
+import com.widedelivery.order.entity.OrderMatchingModel;
+import com.widedelivery.order.entity.OrderStatus;
 import com.widedelivery.utils.GeoLocationUtils;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,6 @@ import static java.lang.System.out;
 import static java.lang.Thread.currentThread;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-@Component
 public class OrderProducingTask implements Runnable {
 
     private static final String MESSAGE_OF_ORDER_IS_PRODUCED = "[PRODUCED ORDER] %s.\n";

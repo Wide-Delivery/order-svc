@@ -1,4 +1,4 @@
-package com.widedelivery.order.services;
+package com.widedelivery.order.service;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.DirectionsApi;
