@@ -45,7 +45,7 @@ public class OrderMapper {
         orderModel.setCargoLength(preCreatedOrderModel.getCargoLength());
         orderModel.setCargoWidth(preCreatedOrderModel.getCargoWidth());
         orderModel.setCargoHeight(preCreatedOrderModel.getCargoHeight());
-        orderModel.setCargoWidth(preCreatedOrderModel.getCargoWeight());
+        orderModel.setCargoWeight(preCreatedOrderModel.getCargoWeight());
         orderModel.setDepartureLongitude(preCreatedOrderModel.getDepartureLongitude());
         orderModel.setDepartureLatitude(preCreatedOrderModel.getDepartureLatitude());
         orderModel.setDepartureTime(convertToInstant(preCreatedOrderModel.getDepartureTime()));
@@ -59,10 +59,10 @@ public class OrderMapper {
     }
 
     private static Timestamp convertToTimestamp(Instant instant) {
-        return Timestamp.newBuilder().setSeconds(instant.getEpochSecond()).build();
+        return Timestamp.newBuilder().setSeconds(instant.getEpochSecond()).setNanos(instant.getNano()).build();
     }
 
     private static Instant convertToInstant(Timestamp timestamp) {
-        return Instant.ofEpochSecond(timestamp.getSeconds());
+        return Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
     }
 }

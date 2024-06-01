@@ -6,15 +6,17 @@ import com.widedelivery.order.mapper.OrderMapper;
 import com.widedelivery.order.mapper.PreCreatedOrderModelMapper;
 import com.widedelivery.order.proto.CreateOrderInput;
 import com.widedelivery.order.proto.CreateOrderResponse;
+import com.widedelivery.order.proto.Order;
 import com.widedelivery.order.proto.OrderResponse;
-import com.widedelivery.order.service.GetOrderInput;
-import com.widedelivery.order.service.OrderService;
-import com.widedelivery.order.service.OrderServiceGrpc;
+import com.widedelivery.order.service.*;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 @GrpcService
 public class GrpcOrderService extends OrderServiceGrpc.OrderServiceImplBase {
@@ -59,6 +61,27 @@ public class GrpcOrderService extends OrderServiceGrpc.OrderServiceImplBase {
                 .setOrder(OrderMapper.toGrpcModel(order))
                 .build());
 
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getOrders(GetOrdersRequest request, StreamObserver<GetOrdersResponse> responseObserver) {
+        int pageNumber = request.getPageNumber();
+        int pageSize = request.getPageSize();
+
+        Page<OrderModel> orders = orderService.getOrders(pageNumber, pageSize);
+        List<Order> grpcOrders = orders
+                .stream()
+                .map(OrderMapper::toGrpcModel)
+                .toList();
+
+        GetOrdersResponse response = GetOrdersResponse.newBuilder()
+                .addAllOrders(grpcOrders)
+                .setTotalPages(orders.getTotalPages())
+                .setCurrentPage(pageNumber)
+                .build();
+
+        responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
 }

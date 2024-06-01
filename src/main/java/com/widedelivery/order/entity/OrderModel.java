@@ -15,6 +15,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Data
 @Document(collection = "orders")
 public class OrderModel {
 

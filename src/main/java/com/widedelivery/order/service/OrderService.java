@@ -8,6 +8,9 @@ import com.widedelivery.order.repository.OrderRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,5 +36,11 @@ public class OrderService {
                             return new OrderNotFoundException("Order not found with id: " + orderId);
                         }
                 );
+    }
+
+    public Page<OrderModel> getOrders(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        return orderRepository.findAll(pageable);
     }
 }
