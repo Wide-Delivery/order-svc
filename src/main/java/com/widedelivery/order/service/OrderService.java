@@ -9,6 +9,7 @@ import com.widedelivery.order.repository.OrderRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CustomOrderRepository customOrderRepository;
 
+    @Autowired
     public OrderService(OrderRepository orderRepository, CustomOrderRepository customOrderRepository) {
         this.orderRepository = orderRepository;
         this.customOrderRepository = customOrderRepository;
@@ -51,5 +53,14 @@ public class OrderService {
 
     public Page<OrderModel> searchOrders(Map<String, Object> searchParams, Pageable pageable) {
         return customOrderRepository.searchOrders(searchParams, pageable);
+    }
+
+    public OrderModel linkDriverWithOrder(String orderId, String driverId, boolean needSendNotificationToClient) {
+        OrderModel order = getOrder(orderId);
+        if (order.getDriverId() != null) {
+            throw new IllegalStateException("Order already has a driver linked!");
+        }
+        order.setDriverId(driverId);
+        return orderRepository.save(order);
     }
 }

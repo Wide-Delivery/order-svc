@@ -1,5 +1,17 @@
 package com.widedelivery.order.mapper;
 
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.EncodedPolyline;
+import com.google.maps.model.LatLng;
+
+import com.mongodb.client.model.geojson.LineString;
+
+import com.mongodb.client.model.geojson.Position;
+
+import com.widedelivery.utils.GeoLocationUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @lombok.experimental.UtilityClass
@@ -52,6 +64,25 @@ public class OrderMapper {
         orderModel.setDescription(preCreatedOrderModel.getDescription());
         orderModel.setNeedLoader(preCreatedOrderModel.isNeedLoader());
         orderModel.setPaymentMethod(preCreatedOrderModel.getPaymentMethod());
+
+        DirectionsResult result = GeoLocationUtils.getGoogleDirectionBetweenPoints(Double.parseDouble(preCreatedOrderModel.getDepartureLatitude()),
+                Double.parseDouble(preCreatedOrderModel.getDepartureLongitude()),
+                Double.parseDouble(preCreatedOrderModel.getDestinationLatitude()), Double.parseDouble(preCreatedOrderModel.getDestinationLongitude()));
+
+        EncodedPolyline encodedPath = result.routes[0].overviewPolyline;
+        List<LatLng> decodedPath = encodedPath.decodePath();
+
+        orderModel.setRouteEncoded(encodedPath.getEncodedPath());
+        List<Position> points = new ArrayList<>();
+        for (LatLng point : decodedPath) {
+            points.add(
+                            new Position(
+                                    List.of(point.lat, point.lng)
+                            )
+            );
+        }
+        LineString geoJsonRoute = new LineString(points);
+        orderModel.setRoute(geoJsonRoute);
         return orderModel;
     }
 

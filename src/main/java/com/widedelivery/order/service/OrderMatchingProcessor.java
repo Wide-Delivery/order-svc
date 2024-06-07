@@ -60,7 +60,7 @@ public final class OrderMatchingProcessor {
             for (final DriverDto driver : this.driversForMatching) {
                for (final OrderMatchingModel order : this.ordersForMatching.keySet()) {
                    for (final DriverTripDto trip : driver.getTrips()) {
-                       double koeff = GeoLocationUtils.calculateCoeff(order, trip);
+                       double koeff = GeoLocationUtils.calculateOrderRelevanceForDriverTrip(order, trip);
                        out.printf("Koeff: %f\n", koeff);
                    }
                }
