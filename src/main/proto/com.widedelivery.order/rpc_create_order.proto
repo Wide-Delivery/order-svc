@@ -10,7 +10,7 @@ import "com.widedelivery.auth/user.proto";
 import "com.widedelivery.order/order.proto";
 
 message CreateOrderInput {
-  auth.UserDTO user = 1;
+  com.widedelivery.auth.proto.UserDTO user = 1;
   string cargo_type = 2;
   double cargo_length = 3;
   double cargo_width = 4;

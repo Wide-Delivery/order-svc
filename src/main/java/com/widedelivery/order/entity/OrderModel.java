@@ -1,11 +1,13 @@
 package com.widedelivery.order.entity;
 
+import com.mongodb.client.model.geojson.LineString;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -62,6 +64,13 @@ public class OrderModel {
 
     @Setter
     private String destinationLatitude;
+
+    @Setter
+    private String routeEncoded;
+
+    @Setter
+    @GeoSpatialIndexed(name = "route_index")
+    private LineString route;
 
     @Setter
     private Instant destinationTime;

@@ -10,6 +10,7 @@ import "com.widedelivery.order/rpc_create_order.proto";
 import "com.widedelivery.order/rpc_get_matched_orders.proto";
 import "com.widedelivery.order/rpc_add_driver_to_matching.proto";
 import "com.widedelivery.order/rpc_remove_driver_from_matching.proto";
+import "com.widedelivery.order/rpc_link_driver_with_order.proto";
 import "com.widedelivery.order/order.proto";
 
 service OrderService {
@@ -23,6 +24,8 @@ service OrderService {
   rpc AddDriverForMatching(com.widedelivery.order.proto.AddDriverToMatchingInput) returns (com.widedelivery.order.proto.GenericResponse) {}
   rpc RemoveDriverFromMatching(com.widedelivery.order.proto.RemoveDriverFromMatchingInput) returns (com.widedelivery.order.proto.GenericResponse) {}
   rpc GetMatchedOrders(com.widedelivery.order.proto.GetMatchedOrdersInput) returns (stream com.widedelivery.order.proto.GetMatchedOrdersOutput) {}
+
+  rpc LinkDriverWithOrder(com.widedelivery.order.proto.LinkDriverWithOrderInput) returns (com.widedelivery.order.proto.OrderResponse) {}
 }
 
 message GetOrderInput {
