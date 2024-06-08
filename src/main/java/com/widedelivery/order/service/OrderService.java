@@ -63,4 +63,16 @@ public class OrderService {
         order.setDriverId(driverId);
         return orderRepository.save(order);
     }
+
+    public void deleteOrder(String orderId) {
+        orderRepository.deleteById(new ObjectId(orderId));
+    }
+
+    public OrderModel updateOrder(String orderId, PreCreatedOrderModel preCreatedOrderModel) {
+        OrderModel order = getOrder(orderId);
+        var updatedOrder = OrderMapper.getFromPreCreateModel(preCreatedOrderModel);
+        updatedOrder.setId(order.getId());
+
+        return orderRepository.save(updatedOrder);
+    }
 }
