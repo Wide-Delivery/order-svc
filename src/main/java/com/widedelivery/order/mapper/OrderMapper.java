@@ -76,9 +76,9 @@ public class OrderMapper {
         List<Position> points = new ArrayList<>();
         for (LatLng point : decodedPath) {
             points.add(
-                            new Position(
-                                    List.of(point.lat, point.lng)
-                            )
+                    new Position(
+                            List.of(point.lat, point.lng)
+                    )
             );
         }
         LineString geoJsonRoute = new LineString(points);

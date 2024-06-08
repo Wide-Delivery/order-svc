@@ -18,6 +18,8 @@ service OrderService {
   rpc GetOrder(GetOrderInput) returns (com.widedelivery.order.proto.OrderResponse) {}
   rpc GetOrders(GetOrdersRequest) returns (GetOrdersResponse) {}
   rpc SearchOrders(SearchOrdersRequest) returns (SearchOrdersResponse) {}
+  rpc deleteOrder(DeleteOrderInput) returns (com.widedelivery.order.proto.GenericResponse) {}
+  rpc UpdateOrder(UpdateOrderInput) returns (com.widedelivery.order.proto.OrderResponse) {}
 
 
 
@@ -26,6 +28,15 @@ service OrderService {
   rpc GetMatchedOrders(com.widedelivery.order.proto.GetMatchedOrdersInput) returns (stream com.widedelivery.order.proto.GetMatchedOrdersOutput) {}
 
   rpc LinkDriverWithOrder(com.widedelivery.order.proto.LinkDriverWithOrderInput) returns (com.widedelivery.order.proto.OrderResponse) {}
+}
+
+message UpdateOrderInput {
+  string order_id = 1;
+  com.widedelivery.order.proto.CreateOrderInput order = 2;
+}
+
+message DeleteOrderInput {
+  string order_id = 1;
 }
 
 message GetOrderInput {
