@@ -33,11 +33,11 @@ public class OrderMapper {
                 .setNeedLoader(order.isNeedLoader())
                 .setPaymentMethod(order.getPaymentMethod())
                 .setPrice(order.getPrice())
-                .setDepartureName(order.getStartAddressName())
-                .setDestinationName(order.getEndAddressName())
-                .setDistance(order.getDistance())
-                .setDuration(order.getDuration())
-                .setRouteEncoded(order.getRouteEncoded())
+                .setDepartureName(Optional.ofNullable(order.getStartAddressName()).orElse("N/A"))
+                .setDestinationName(Optional.ofNullable(order.getEndAddressName()).orElse("N/A"))
+                .setDistance(Optional.ofNullable(order.getDistance()).orElse("N/A"))
+                .setDuration(Optional.ofNullable(order.getDuration()).orElse("N/A"))
+                .setRouteEncoded(Optional.ofNullable(order.getRouteEncoded()).orElse("N/A"))
                 .setCreatedAt(convertToTimestamp(order.getCreatedAt()))
                 .setUpdatedAt(convertToTimestamp(order.getUpdatedAt()));
 
@@ -59,22 +59,23 @@ public class OrderMapper {
             }
         }
 
-        for (int i = 0; i < order.getRoute().getCoordinates().size(); i++) {
-            messageBuilder.addRoute(
-                    order
-                            .getRoute()
-                            .getCoordinates()
-                            .get(i)
-                            .getValues()
-                            .get(0) + ","
-                            + order
-                            .getRoute()
-                            .getCoordinates()
-                            .get(i)
-                            .getValues()
-                            .get(1));
+        if (order.getRoute() != null) {
+            for (int i = 0; i < order.getRoute().getCoordinates().size(); i++) {
+                messageBuilder.addRoute(
+                        order
+                                .getRoute()
+                                .getCoordinates()
+                                .get(i)
+                                .getValues()
+                                .get(0) + ","
+                                + order
+                                .getRoute()
+                                .getCoordinates()
+                                .get(i)
+                                .getValues()
+                                .get(1));
+            }
         }
-
         Optional.ofNullable(order.getDriverId())
                 .ifPresent(messageBuilder::setDriverId);
 
