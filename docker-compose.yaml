@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   order-svc:
-    image: 'stanislavmatsak/wd-order-svc:latest'
+    image: 'stanislavmatsak/wd-order-svc:matching-service'
     container_name: 'order-svc'
     ports:
       - '3006:3006'

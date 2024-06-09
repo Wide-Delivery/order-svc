@@ -3,6 +3,7 @@ package com.widedelivery.order;
 import com.widedelivery.order.entity.OrderModel;
 import com.widedelivery.order.entity.OrderStatus;
 import com.widedelivery.order.entity.PreCreatedOrderModel;
+import com.widedelivery.order.exception.OrderNotFoundException;
 import com.widedelivery.order.mapper.OrderMapper;
 import com.widedelivery.order.mapper.PreCreatedOrderModelMapper;
 import com.widedelivery.order.proto.CreateOrderInput;
@@ -60,14 +61,23 @@ public class GrpcOrderService extends OrderServiceGrpc.OrderServiceImplBase {
     public void getOrder(GetOrderInput request, StreamObserver<OrderResponse> responseObserver) {
         String id = request.getOrderId();
 
-        OrderModel order = orderService.getOrder(id);
+        try {
+            OrderModel order = orderService.getOrder(id);
 
-        responseObserver.onNext(OrderResponse
-                .newBuilder()
-                .setOrder(OrderMapper.toGrpcModel(order))
-                .build());
+            responseObserver.onNext(OrderResponse
+                    .newBuilder()
+                    .setOrder(OrderMapper.toGrpcModel(order))
+                    .build());
 
-        responseObserver.onCompleted();
+            responseObserver.onCompleted();
+        } catch (OrderNotFoundException e) {
+            responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("Order not found with id: " + id).asRuntimeException());
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage());
+            responseObserver.onError(Status.INTERNAL.withDescription("Cannot get order by id: " + id).asRuntimeException());
+        }
+
     }
 
     @Override
