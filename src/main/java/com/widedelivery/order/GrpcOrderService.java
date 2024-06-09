@@ -157,4 +157,26 @@ public class GrpcOrderService extends OrderServiceGrpc.OrderServiceImplBase {
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void deleteOrder(com.widedelivery.order.service.DeleteOrderInput request, io.grpc.stub.StreamObserver<com.widedelivery.order.proto.GenericResponse> responseObserver) {
+        orderService.deleteOrder(request.getOrderId());
+        responseObserver.onNext(com.widedelivery.order.proto.GenericResponse.newBuilder().build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void updateOrder(com.widedelivery.order.service.UpdateOrderInput request, io.grpc.stub.StreamObserver<com.widedelivery.order.proto.OrderResponse> responseObserver) {
+        PreCreatedOrderModel preCreatedOrderModel = PreCreatedOrderModelMapper.toModel(request.getOrder());
+
+        var oderId = request.getOrderId();
+        OrderModel newOrderModel = orderService.updateOrder(oderId, preCreatedOrderModel);
+
+        OrderResponse response = OrderResponse.newBuilder()
+                .setOrder(OrderMapper.toGrpcModel(newOrderModel))
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 }
