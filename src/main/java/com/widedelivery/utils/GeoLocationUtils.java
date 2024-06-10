@@ -58,8 +58,9 @@ public class GeoLocationUtils {
             long extraTimeToCompleteOrder = routeService.calculateRouteTime(driverTripOrigin, orderOrigin, TravelMode.DRIVING) +
                     routeService.calculateRouteTime(orderDestination, driverTripDestination, TravelMode.DRIVING);
 
+            double deltaTime = extraTimeToCompleteOrder + orderNeededTime - driverTripTime;
             double deltaMax = 0.05 * driverTripTime + 0.1 * orderNeededTime;
-            return Math.max(0, Math.min(1, 1 - extraTimeToCompleteOrder / (driverTripTime + deltaMax)));
+            return Math.max(0, Math.min(1, 1 - (deltaTime / (driverTripTime + deltaMax))));
         } catch (Exception e) {
             e.printStackTrace();
             Thread.currentThread().interrupt();
