@@ -8,6 +8,7 @@ import com.mongodb.client.model.geojson.LineString;
 
 import com.mongodb.client.model.geojson.Position;
 
+import com.widedelivery.order.service.PriceEstimationService;
 import com.widedelivery.utils.GeoLocationUtils;
 
 import java.util.ArrayList;
@@ -17,14 +18,12 @@ import java.util.Optional;
 @lombok.experimental.UtilityClass
 public class OrderMapper {
 
+    PriceEstimationService priceEstimationService = new PriceEstimationService();
+
     public static com.widedelivery.order.proto.Order toGrpcModel(final com.widedelivery.order.entity.OrderModel order) {
         var messageBuilder = com.widedelivery.order.proto.Order.newBuilder()
                 .setId(order.getId().toString())
                 .setUserId(order.getUserId().toString())
-                .setCargoLength(order.getCargoLength())
-                .setCargoWidth(order.getCargoWidth())
-                .setCargoWeight(order.getCargoWeight())
-                .setCargoHeight(order.getCargoHeight())
                 .setStatus(convertToOrderStatus(order.getStatus()))
                 .setDepartureLongitude(order.getDepartureLongitude())
                 .setDepartureLatitude(order.getDepartureLatitude())
@@ -33,9 +32,50 @@ public class OrderMapper {
                 .setDescription(order.getDescription())
                 .setNeedLoader(order.isNeedLoader())
                 .setPaymentMethod(order.getPaymentMethod())
+                .setPrice(order.getPrice())
+                .setDepartureName(Optional.ofNullable(order.getStartAddressName()).orElse("N/A"))
+                .setDestinationName(Optional.ofNullable(order.getEndAddressName()).orElse("N/A"))
+                .setDistance(Optional.ofNullable(order.getDistance()).orElse("N/A"))
+                .setDuration(Optional.ofNullable(order.getDuration()).orElse("N/A"))
+                .setRouteEncoded(Optional.ofNullable(order.getRouteEncoded()).orElse("N/A"))
                 .setCreatedAt(convertToTimestamp(order.getCreatedAt()))
                 .setUpdatedAt(convertToTimestamp(order.getUpdatedAt()));
 
+        if (order.getCargoType() != null) {
+            messageBuilder.setCargoType(order.getCargoType());
+        }
+        else {
+            if (order.getCargoHeight() != 0) {
+                messageBuilder.setCargoHeight(order.getCargoHeight());
+            }
+            if (order.getCargoLength() != 0) {
+                messageBuilder.setCargoLength(order.getCargoLength());
+            }
+            if (order.getCargoWidth() != 0) {
+                messageBuilder.setCargoWidth(order.getCargoWidth());
+            }
+            if (order.getCargoWeight() != 0) {
+                messageBuilder.setCargoWeight(order.getCargoWeight());
+            }
+        }
+
+        if (order.getRoute() != null) {
+            for (int i = 0; i < order.getRoute().getCoordinates().size(); i++) {
+                messageBuilder.addRoute(
+                        order
+                                .getRoute()
+                                .getCoordinates()
+                                .get(i)
+                                .getValues()
+                                .get(0) + ","
+                                + order
+                                .getRoute()
+                                .getCoordinates()
+                                .get(i)
+                                .getValues()
+                                .get(1));
+            }
+        }
         Optional.ofNullable(order.getDriverId())
                 .ifPresent(messageBuilder::setDriverId);
 
@@ -55,6 +95,7 @@ public class OrderMapper {
         orderModel.setCargoWidth(preCreatedOrderModel.getCargoWidth());
         orderModel.setCargoHeight(preCreatedOrderModel.getCargoHeight());
         orderModel.setCargoWeight(preCreatedOrderModel.getCargoWeight());
+        orderModel.setCargoType(preCreatedOrderModel.getCargoType());
         orderModel.setDepartureLongitude(preCreatedOrderModel.getDepartureLongitude());
         orderModel.setDepartureLatitude(preCreatedOrderModel.getDepartureLatitude());
         orderModel.setDepartureTime(convertToInstant(preCreatedOrderModel.getDepartureTime()));
@@ -82,7 +123,14 @@ public class OrderMapper {
             );
         }
         LineString geoJsonRoute = new LineString(points);
+
         orderModel.setRoute(geoJsonRoute);
+        orderModel.setDistance(result.routes[0].legs[0].distance.humanReadable);
+        orderModel.setDuration(result.routes[0].legs[0].duration.humanReadable);
+        orderModel.setStartAddressName(result.routes[0].legs[0].startAddress);
+        orderModel.setEndAddressName(result.routes[0].legs[0].endAddress);
+
+        orderModel.setPrice(priceEstimationService.calculatePrice(orderModel, 10, 5, result.routes[0].legs[0].distance.inMeters));
         return orderModel;
     }
 
@@ -126,6 +174,6 @@ public class OrderMapper {
     }
 
     private static java.time.Instant convertToInstant(com.google.protobuf.Timestamp timestamp) {
-        return java.time.Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
+        return timestamp != null ? java.time.Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos()) : null;
     }
 }

@@ -28,6 +28,14 @@ message Order {
   string driver_id = 18;
   OrderStatus status = 19;
   string current_location  = 20;
+  string cargo_type = 21;
+  string route_encoded = 22;
+  repeated string route = 23;
+  string distance = 24;
+  string duration = 25;
+  string departure_name = 26;
+  string destination_name = 27;
+  double price = 28;
 }
 
 enum OrderStatus {

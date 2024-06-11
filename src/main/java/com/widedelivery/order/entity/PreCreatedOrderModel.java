@@ -24,6 +24,8 @@ public class PreCreatedOrderModel {
 
     private double cargoWeight;
 
+    private String cargoType;
+
     private String departureLongitude;
 
     private String departureLatitude;

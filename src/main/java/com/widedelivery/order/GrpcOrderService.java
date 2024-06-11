@@ -3,12 +3,10 @@ package com.widedelivery.order;
 import com.widedelivery.order.entity.OrderModel;
 import com.widedelivery.order.entity.OrderStatus;
 import com.widedelivery.order.entity.PreCreatedOrderModel;
+import com.widedelivery.order.exception.OrderNotFoundException;
 import com.widedelivery.order.mapper.OrderMapper;
 import com.widedelivery.order.mapper.PreCreatedOrderModelMapper;
-import com.widedelivery.order.proto.CreateOrderInput;
-import com.widedelivery.order.proto.CreateOrderResponse;
-import com.widedelivery.order.proto.Order;
-import com.widedelivery.order.proto.OrderResponse;
+import com.widedelivery.order.proto.*;
 import com.widedelivery.order.service.*;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -60,14 +58,23 @@ public class GrpcOrderService extends OrderServiceGrpc.OrderServiceImplBase {
     public void getOrder(GetOrderInput request, StreamObserver<OrderResponse> responseObserver) {
         String id = request.getOrderId();
 
-        OrderModel order = orderService.getOrder(id);
+        try {
+            OrderModel order = orderService.getOrder(id);
 
-        responseObserver.onNext(OrderResponse
-                .newBuilder()
-                .setOrder(OrderMapper.toGrpcModel(order))
-                .build());
+            responseObserver.onNext(OrderResponse
+                    .newBuilder()
+                    .setOrder(OrderMapper.toGrpcModel(order))
+                    .build());
 
-        responseObserver.onCompleted();
+            responseObserver.onCompleted();
+        } catch (OrderNotFoundException e) {
+            responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("Order not found with id: " + id).asRuntimeException());
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage());
+            responseObserver.onError(Status.INTERNAL.withDescription("Cannot get order by id: " + id).asRuntimeException());
+        }
+
     }
 
     @Override
@@ -168,5 +175,22 @@ public class GrpcOrderService extends OrderServiceGrpc.OrderServiceImplBase {
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void linkDriverWithOrder(LinkDriverWithOrderInput request, StreamObserver<OrderResponse> responseObserver) {
+        try {
+            OrderModel updatedOrder = orderService.linkDriverWithOrder(request.getOrderId(), request.getDriverId());
+
+            responseObserver.onNext(OrderResponse.newBuilder().setOrder(OrderMapper.toGrpcModel(updatedOrder)).build());
+            responseObserver.onCompleted();
+
+        } catch (IllegalStateException e) {
+            responseObserver.onError(Status.FAILED_PRECONDITION.withDescription(e.getMessage()).asRuntimeException());
+        } catch (OrderNotFoundException e) {
+            responseObserver.onError(Status.INVALID_ARGUMENT.withDescription(e.getMessage()).asRuntimeException());
+        } catch (Exception e) {
+            responseObserver.onError(Status.INTERNAL.withDescription(e.getMessage()).asRuntimeException());
+        }
     }
 }

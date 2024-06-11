@@ -15,6 +15,7 @@ public class PreCreatedOrderModelMapper {
                 .cargoWidth(preCreatedOrder.getCargoWidth())
                 .cargoHeight(preCreatedOrder.getCargoHeight())
                 .cargoWeight(preCreatedOrder.getCargoWeight())
+                .cargoType(preCreatedOrder.getCargoType())
                 .departureLongitude(preCreatedOrder.getDepartureLongitude())
                 .departureLatitude(preCreatedOrder.getDepartureLatitude())
                 .departureTime(preCreatedOrder.getDepartureTime())

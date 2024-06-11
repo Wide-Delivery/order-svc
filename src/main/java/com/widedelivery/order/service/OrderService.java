@@ -1,6 +1,7 @@
 package com.widedelivery.order.service;
 
 import com.widedelivery.order.entity.OrderModel;
+import com.widedelivery.order.entity.OrderStatus;
 import com.widedelivery.order.entity.PreCreatedOrderModel;
 import com.widedelivery.order.exception.OrderNotFoundException;
 import com.widedelivery.order.mapper.OrderMapper;
@@ -55,12 +56,13 @@ public class OrderService {
         return customOrderRepository.searchOrders(searchParams, pageable);
     }
 
-    public OrderModel linkDriverWithOrder(String orderId, String driverId, boolean needSendNotificationToClient) {
+    public OrderModel linkDriverWithOrder(String orderId, String driverId) {
         OrderModel order = getOrder(orderId);
-        if (order.getDriverId() != null) {
+        if (order.getDriverId() != null && !order.getDriverId().equals("")) {
             throw new IllegalStateException("Order already has a driver linked!");
         }
         order.setDriverId(driverId);
+        order.setStatus(OrderStatus.READY);
         return orderRepository.save(order);
     }
 

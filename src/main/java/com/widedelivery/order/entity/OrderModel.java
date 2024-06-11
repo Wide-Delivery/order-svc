@@ -51,6 +51,9 @@ public class OrderModel {
     private double cargoWeight;
 
     @Setter
+    private String cargoType;
+
+    @Setter
     private String departureLongitude;
 
     @Setter
@@ -66,6 +69,9 @@ public class OrderModel {
     private String destinationLatitude;
 
     @Setter
+    private Instant destinationTime;
+
+    @Setter
     private String routeEncoded;
 
     @Setter
@@ -73,13 +79,25 @@ public class OrderModel {
     private LineString route;
 
     @Setter
-    private Instant destinationTime;
+    private String distance;
+
+    @Setter
+    private String duration;
+
+    @Setter
+    private String startAddressName;
+
+    @Setter
+    private String endAddressName;
 
     @Setter
     private String description;
 
     @Setter
     private boolean needLoader;
+
+    @Setter
+    private double price;
 
     @Setter
     private String paymentMethod;

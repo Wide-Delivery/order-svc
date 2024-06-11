@@ -1,15 +1,16 @@
 package com.widedelivery.order.mapper;
 
 import com.widedelivery.order.entity.OrderModel;
-import com.widedelivery.order.entity.PreCreatedOrderModel;
 import com.widedelivery.order.proto.Order;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.PropertySource;
 
 import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@PropertySource("classpath:application.properties")
 public class OrderMapperTest {
 
     @Test
