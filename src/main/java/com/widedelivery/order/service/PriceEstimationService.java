@@ -15,15 +15,8 @@ public final class PriceEstimationService {
     private OrderRepository orderRepository;
 
     // Визначення ціни за поїздку
-    public double calculatePrice(OrderModel order, double basePrice, double pricePerKm, double distance) {
-//        double demandCoefficient = calculateDemandCoefficient(order.getDepartureTime(), order.getDepartureLongitude(), order.getDepartureLatitude());
-//        double locationCoefficient = calculateLocationCoefficient(order.getDepartureLongitude(), order.getDepartureLatitude(), order.getDestinationLongitude(), order.getDestinationLatitude());
-//        double roadConditionCoefficient = calculateRoadConditionCoefficient(order.getDepartureLongitude(), order.getDepartureLatitude(), order.getDestinationLongitude(), order.getDestinationLatitude());
-//        double timeOfDayCoefficient = calculateTimeOfDayCoefficient(order.getDepartureTime());
-//        double holidayCoefficient = calculateHolidayCoefficient(order.getDepartureTime());
-//
-//        return basePrice + (pricePerKm * distance * demandCoefficient * locationCoefficient * roadConditionCoefficient * timeOfDayCoefficient * holidayCoefficient);
-        return new Random().nextDouble();
+    public double calculatePrice(OrderModel order, double basePrice, double pricePerKm, double distance, double volumePrice) {
+        return basePrice + pricePerKm * distance + volumePrice * pricePerKm;
     }
 
     // Методи для розрахунку коефіцієнтів (приклади)
